@@ -77,8 +77,11 @@ static void insertElementByIndex(ArrayDataT * handle,
 		tmp_size = handle->physical_size + LSQ_BASE_ARRAY_PHYS_SIZE;
 		setContainerSize(handle, tmp_size);
 	}
-	if (index == handle->logical_size) 
+	if (index == handle->logical_size) \
+	{ 
 		LSQ_InsertRearElement(handle, element);
+		return;
+	}
 	tmp_index = (index > handle->logical_size) ? handle->logical_size : index;
 	tmp_index = (index < 0) ? 0 : index;
 	handle->logical_size++;
@@ -96,7 +99,10 @@ static void deleteElementByIndex(ArrayDataT * handle, LSQ_IntegerIndexT index)
 		isHandleInvalid((handle)->data_ptr))
 		return;
 	if (index == handle->logical_size - 1)
+	{
 		LSQ_DeleteRearElement(handle);
+		return;
+	}
 	tmp_size = LSQ_BASE_ARRAY_PHYS_SIZE;
 	tmp_index = (index > handle->logical_size) ? handle->logical_size : index;
 	tmp_index = (index < 0) ? 0 : index;
@@ -173,8 +179,6 @@ extern LSQ_BaseTypeT * LSQ_DereferenceIterator(LSQ_IteratorT iterator)
 	return (tmp_iterator)->array_data->data_ptr + tmp_iterator->index;
 }
 
-/* Следующие три функции создают итератор в памяти и возвращают его дескриптор */
-/* Функция, возвращающая итератор, ссылающийся на элемент с указанным индексом */
 extern LSQ_IteratorT LSQ_GetElementByIndex(LSQ_HandleT handle, LSQ_IntegerIndexT index)
 {
 	int tmp_index;
