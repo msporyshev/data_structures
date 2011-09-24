@@ -29,7 +29,7 @@ typedef struct
 
 static int isContainerFull(ArrayDataT * handle);
 
-static int isContainerEmpty(ArrayDataT * handle);
+static int createIterator(ArrayDataT * handle);
 
 static void setContainerSize(ArrayDataT * handle, int size);
 
@@ -38,11 +38,6 @@ static void setContainerSize(ArrayDataT * handle, int size);
 static int isContainerFull(ArrayDataT * handle)
 {
 	return (isHandleInvalid(handle)) ? -1 : handle->logical_size == handle->physical_size;	
-}
-
-static int isContainerEmpty(ArrayDataT * handle)
-{
-	return (isHandleInvalid(handle)) ? -1 : handle->logical_size == 0;	
 }
 
 static void setContainerSize(ArrayDataT * handle, int size)
