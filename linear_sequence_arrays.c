@@ -29,7 +29,7 @@ typedef struct
 
 static int isContainerFull(ArrayDataT * handle);
 
-static int createIterator(ArrayDataT * handle);
+static LSQ_IteratorT createIterator(LSQ_HandleT handle);
 
 static void setContainerSize(ArrayDataT * handle, int size);
 
