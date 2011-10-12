@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include "linear_sequence.h"
 
-#define PHYS_SIZE_CHANGE_FACTOR 10;
+#define PHYS_SIZE_CHANGE_FACTOR 2;
 #define LSQ_ARRAY_BASE_PHYS_SIZE 1;
 #define SIZE_RATIO_LOWER_THRESHOLD 0.25;
 #define IS_HANDLE_INVALID(handle)(handle == LSQ_HandleInvalid)
@@ -68,8 +68,8 @@ extern LSQ_HandleT LSQ_CreateSequence(void)
 	array_data = (ArrayDataT *)malloc(sizeof(ArrayDataT));
 	if (array_data == NULL)
 		return LSQ_HandleInvalid;
-	array_data->data_ptr = NULL;
 	array_data->physical_size = LSQ_ARRAY_BASE_PHYS_SIZE;
+	array_data->data_ptr = (LSQ_BaseTypeT *)malloc(sizeof(LSQ_BaseTypeT) * array_data->physical_size);
 	array_data->logical_size = 0;
 	return array_data;
 }
@@ -258,6 +258,8 @@ extern void LSQ_DeleteGivenElement(LSQ_IteratorT iterator)
 	if (is_container_empty_enough)
 	{
 		new_size = array_data->physical_size / PHYS_SIZE_CHANGE_FACTOR;
+		if (array_data->physical_size == 0)
+			new_size = LSQ_ARRAY_BASE_PHYS_SIZE;
 		setContainerSize(array_data, new_size);
 	}
 }
