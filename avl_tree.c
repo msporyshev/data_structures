@@ -54,7 +54,7 @@ static void restoreBalance(AVLTreeT *tree, TreeNodeT *root, BalancingTypeT balan
 static void replaceNode(AVLTreeT *tree, TreeNodeT *node, TreeNodeT *substitute);
 static int treeHeight(const TreeNodeT* root);
 static int nodeBalanceFlag(const TreeNodeT* node);
-static int maximum(int a, int b);
+static inline int maximum(int a, int b);
 static void fixTreeHeight(TreeNodeT * root);
 static int stopCriterion(BalancingTypeT balance);
 
@@ -62,7 +62,7 @@ static int stopCriterion(BalancingTypeT balance){
 	return (int)balance;
 }
 
-static int maximum(int a, int b) {
+static inline int maximum(int a, int b) {
 	return a > b ? a : b;
 }
 
