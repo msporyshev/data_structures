@@ -1,7 +1,5 @@
 #include <assert.h>
-#include <string.h>
 #include <stdlib.h>
-#include <math.h>
 #include "linear_sequence_assoc.h"
 
 #define IS_HANDLE_INVALID(handle)        ((handle) == LSQ_HandleInvalid)
@@ -43,10 +41,10 @@ typedef struct
 } IteratorT;
 
 static void treeWalkWithDestruction(TreeNodeT * root);
-static TreeNodeT * successor(const TreeNodeT *node);
-static TreeNodeT * predecessor(const TreeNodeT * node);
-static TreeNodeT * treeMaximum(const TreeNodeT * root);
-static TreeNodeT * treeMinimum(const TreeNodeT * root);
+static TreeNodeT * successor(TreeNodeT *node);
+static TreeNodeT * predecessor(TreeNodeT * node);
+static TreeNodeT * treeMaximum(TreeNodeT * root);
+static TreeNodeT * treeMinimum(TreeNodeT * root);
 static IteratorT * createIterator(LSQ_HandleT handle, TreeNodeT * node);
 static void smallLeftRotate(AVLTreeT *tree, TreeNodeT *root);
 static void bigLeftRotate(AVLTreeT *tree, TreeNodeT *root);
@@ -54,31 +52,31 @@ static void smallRightRotate(AVLTreeT *tree, TreeNodeT *root);
 static void bigRightRotate(AVLTreeT *tree, TreeNodeT *root);
 static void restoreBalance(AVLTreeT *tree, TreeNodeT *root, BalancingTypeT balance);
 static void replaceNode(AVLTreeT *tree, TreeNodeT *node, TreeNodeT *substitute);
-static inline int treeHeight(const TreeNodeT* root);
-static inline int nodeBalanceFlag(const TreeNodeT* node);
-static inline int max(int a, int b);
-static inline void fixTreeHeight(TreeNodeT * root);
-static inline int stopCriterion(BalancingTypeT balance);
+static int treeHeight(const TreeNodeT* root);
+static int nodeBalanceFlag(const TreeNodeT* node);
+static int maximum(int a, int b);
+static void fixTreeHeight(TreeNodeT * root);
+static int stopCriterion(BalancingTypeT balance);
 
-inline int stopCriterion(BalancingTypeT balance){
+static int stopCriterion(BalancingTypeT balance){
 	return (int)balance;
 }
 
-inline int max(int a, int b) {
+static int maximum(int a, int b) {
 	return a > b ? a : b;
 }
 
-inline int treeHeight(const TreeNodeT* root) {
+static int treeHeight(const TreeNodeT* root) {
 	return root != NULL ? root->height : -1;
 }
 
-inline int nodeBalanceFlag(const TreeNodeT* node) {
+static int nodeBalanceFlag(const TreeNodeT* node) {
 	assert(node != NULL);
 	return treeHeight(node->l_child) - treeHeight(node->r_child);
 }
-inline void fixTreeHeight(TreeNodeT * root) {
+static void fixTreeHeight(TreeNodeT * root) {
 	assert(root != NULL);
-	root->height = 1 + max(treeHeight(root->l_child), treeHeight(root->r_child));
+	root->height = 1 + maximum(treeHeight(root->l_child), treeHeight(root->r_child));
 }
 
 void replaceNode(AVLTreeT *tree, TreeNodeT *node, TreeNodeT *substitute)
