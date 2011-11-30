@@ -175,6 +175,8 @@ static void smallLeftRotate(AVLTreeT *tree, TreeNodeT *root) {
 	}
 	node->l_child = root;
 	root->parent = node;
+	fixTreeHeight(root);
+	fixTreeHeight(node);
 }
 
 static void smallRightRotate(AVLTreeT *tree, TreeNodeT *root) {
@@ -196,6 +198,8 @@ static void smallRightRotate(AVLTreeT *tree, TreeNodeT *root) {
 	}
 	node->r_child = root;
 	root->parent = node;
+	fixTreeHeight(root);
+	fixTreeHeight(node);
 }
 
 static void bigLeftRotate(AVLTreeT *tree, TreeNodeT *root) {
@@ -400,35 +404,37 @@ extern void LSQ_InsertElement(LSQ_HandleT handle, LSQ_IntegerIndexT key, LSQ_Bas
 			  *parent = NULL;
 	if (IS_HANDLE_INVALID(handle))
         return;
-	insert_node = (TreeNodeT *)malloc(sizeof(TreeNodeT));
-	if (insert_node == NULL)
-		return;
-	tree->size++;
-	insert_node->key = key;
-	insert_node->value = value;
-	insert_node->r_child = NULL;
-	insert_node->l_child = NULL;
 	node = tree->root;
 	while (node != NULL) 
 	{
 		parent = node;
-		node = (insert_node->key > node->key) ? node->r_child : node->l_child;
+		if (key > node->key)
+			node = node->r_child; 
+		else if (key < node->key)
+			node = node->l_child;
+		else {
+			node->value = value;
+			return;
+		}
 	}
-	insert_node->parent = parent;
-	insert_node->height = 0;
+	insert_node = (TreeNodeT *)malloc(sizeof(TreeNodeT));
+	if (insert_node == NULL)
+		return;
+	insert_node->key = key;
+	insert_node->value = value;
+	insert_node->r_child = NULL;
+	insert_node->l_child = NULL;
+	tree->size++;
+	insert_node->parent = parent; 
 	if (parent == NULL) 
 	{
 		tree->root = insert_node;
 		return;
 	}
-	if (insert_node->key > parent->key) {
+	if (key > parent->key)
 		parent->r_child = insert_node;
-		node = insert_node;
-	}
-	else {
+	else
 		parent->l_child = insert_node;
-		node = insert_node;
-	}
 	restoreBalance(tree, parent, BT_AFTERINSERT);
 }
 
