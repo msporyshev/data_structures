@@ -5,8 +5,8 @@
 #define IS_HANDLE_INVALID(handle)        ((handle) == LSQ_HandleInvalid)
 
 typedef enum {
-	BT_AFTERINSERT,
-	BT_AFTERDELETE,
+	BT_AFTER_INSERT = 0,
+	BT_AFTER_DELETE = 1,
 }	BalancingTypeT;
 
 typedef enum 
@@ -21,7 +21,6 @@ typedef struct TreeNodeStruct
 	struct TreeNodeStruct * l_child;
 	struct TreeNodeStruct * parent;
 	struct TreeNodeStruct * r_child;
-	int balance;
 	int height;
 	LSQ_IntegerIndexT key;
 	LSQ_BaseTypeT value;
@@ -41,40 +40,38 @@ typedef struct
 } IteratorT;
 
 static void treeWalkWithDestruction(TreeNodeT * root);
-static TreeNodeT * successor(TreeNodeT *node);
+static TreeNodeT * successor(TreeNodeT * node);
 static TreeNodeT * predecessor(TreeNodeT * node);
 static TreeNodeT * treeMaximum(TreeNodeT * root);
 static TreeNodeT * treeMinimum(TreeNodeT * root);
 static IteratorT * createIterator(LSQ_HandleT handle, TreeNodeT * node);
 static void smallLeftRotate(AVLTreeT *tree, TreeNodeT *root);
-static void bigLeftRotate(AVLTreeT *tree, TreeNodeT *root);
 static void smallRightRotate(AVLTreeT *tree, TreeNodeT *root);
-static void bigRightRotate(AVLTreeT *tree, TreeNodeT *root);
-static void restoreBalance(AVLTreeT *tree, TreeNodeT *root, BalancingTypeT balance);
+static void restoreBalance(AVLTreeT *tree, TreeNodeT *node, BalancingTypeT balance);
 static void replaceNode(AVLTreeT *tree, TreeNodeT *node, TreeNodeT *substitute);
-static int treeHeight(const TreeNodeT* root);
-static int nodeBalanceFlag(const TreeNodeT* node);
-static inline int maximum(int a, int b);
-static void fixTreeHeight(TreeNodeT * root);
-static int stopCriterion(BalancingTypeT balance);
+static __inline int treeHeight(const TreeNodeT* root);
+static __inline int nodeBalanceFlag(const TreeNodeT* node);
+static __inline int maximum(int a, int b);
+static __inline void fixTreeHeight(TreeNodeT * root);
+static __inline int stopCriterion(BalancingTypeT balance);
 
-static int stopCriterion(BalancingTypeT balance){
+static __inline int stopCriterion(BalancingTypeT balance){
 	return (int)balance;
 }
 
-static inline int maximum(int a, int b) {
+static __inline int maximum(int a, int b) {
 	return a > b ? a : b;
 }
 
-static int treeHeight(const TreeNodeT* root) {
+static __inline int treeHeight(const TreeNodeT* root) {
 	return root != NULL ? root->height : -1;
 }
 
-static int nodeBalanceFlag(const TreeNodeT* node) {
+static __inline int nodeBalanceFlag(const TreeNodeT* node) {
 	assert(node != NULL);
 	return treeHeight(node->l_child) - treeHeight(node->r_child);
 }
-static void fixTreeHeight(TreeNodeT * root) {
+static __inline void fixTreeHeight(TreeNodeT * root) {
 	assert(root != NULL);
 	root->height = 1 + maximum(treeHeight(root->l_child), treeHeight(root->r_child));
 }
@@ -111,7 +108,7 @@ static TreeNodeT * successor(TreeNodeT * node)
 	parent = node->parent;
 	if (node->r_child != NULL)
 		return treeMinimum(node->r_child);
-	while ((parent != NULL) && (cur_node == parent->r_child))
+	while (parent != NULL && cur_node == parent->r_child)
 	{
 		cur_node = parent;
 		parent = parent->parent;
@@ -158,7 +155,7 @@ static TreeNodeT * treeMinimum(TreeNodeT * root)
 
 static void smallLeftRotate(AVLTreeT *tree, TreeNodeT *root) {
 	TreeNodeT * node = NULL;
-	if ((root == NULL) || IS_HANDLE_INVALID(tree))
+	if (root == NULL || IS_HANDLE_INVALID(tree))
 		return;
 	node = root->r_child;
 	root->r_child = node->l_child;
@@ -435,7 +432,7 @@ extern void LSQ_InsertElement(LSQ_HandleT handle, LSQ_IntegerIndexT key, LSQ_Bas
 		parent->r_child = insert_node;
 	else
 		parent->l_child = insert_node;
-	restoreBalance(tree, parent, BT_AFTERINSERT);
+	restoreBalance(tree, parent, BT_AFTER_INSERT);
 }
 
 extern void LSQ_DeleteFrontElement(LSQ_HandleT handle)
@@ -480,5 +477,5 @@ extern void LSQ_DeleteElement(LSQ_HandleT handle, LSQ_IntegerIndexT key)
         replaceNode(tree, iter->node, iter->node->r_child);
     free(iter->node);
     tree->size--;
-	restoreBalance(tree, parent, BT_AFTERDELETE);
+	restoreBalance(tree, parent, BT_AFTER_DELETE);
 }
